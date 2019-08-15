@@ -9,7 +9,7 @@
   $sql = "SELECT name_user,id FROM usuario WHERE id = '$id_user'";
   $resultado = $conexion->query($sql);
   $row = $resultado->fetch_assoc();
-  $sql_product =mysqli_query($conexion,"SELECT * FROM product");
+  $sql_client =mysqli_query($conexion,"SELECT * FROM assistant");
   
 ?>
 
@@ -17,7 +17,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventario - Administracion</title>
+    <title>Asistentes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS-->
     <link href="design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -81,13 +81,13 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseExamplePages">
                 <li>
-                <a href="layout_assistant.php">Ayudantes</a>
+                <a href="login.html">Ayudantes</a>
                 </li>
                 <li>
-                <a href="layout_clients.php">Clientes</a>
+                <a href="register.html">Clientes</a>
                 </li>
                 <li>
-                <a href="vehiculo/layout_vehiculo.php">Vehiculos</a>
+                <a href="forgot-password.html">Vehiculos</a>
                 </li>
                 <li>
                 <a href="blank.html">Proveedores</a>
@@ -141,131 +141,57 @@
         <!-- Breadcrumbs-->
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="#">Inicio</a>
+            <a href="inventory.php">Inicio</a>
           </li>
-          <li class="breadcrumb-item active">Productos</li>
+          <li class="breadcrumb-item active">Asistentes</li>
         </ol>
    <!-- Icon Cards-->
-        <div class="row">
-          <div class="col-xl-3 col-sm-6 mb-3">
-            <div class="card text-white bg-primary o-hidden h-100">
-              <div class="card-body">
-                <div class="card-body-icon">
-                  <i class="fa fa-fw fa-database"></i>
-                </div>
-                <div class="mr-5">
-                  100 Trabajos
-                </div>
-                </div>
-                  <a class="card-footer text-white clearfix small z-1" href="#">
-                    <span class="float-left">Ver Detalles</span>
-                    <span class="float-right">
-                      <i class="fa fa-angle-right"></i>
-                    </span>
-                  </a>
-                </div>
-            </div>
-        
-       
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-warning o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-fw fa-list"></i>
-              </div>
-              <div class="mr-5">5 Deudas</div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">Ver Detalles</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-        
-      <div class="col-xl-3 col-sm-6 mb-3">
-        <div class="card text-white bg-danger o-hidden h-100">
-          <div class="card-body">
-          <div class="card-body-icon">
-            <i class="fa fa-fw fa-car"></i>
-          </div>
-          <div class="mr-5">50 Vehiculos</div>
-        </div>
-        <a class="card-footer text-white clearfix small z-1" href="#">
-          <span class="float-left">Ver Detalles</span>
-          <span class="float-right">
-              <i class="fa fa-angle-right"></i>
-         </span>
-        </a>
-      </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-3">
-      <div class="card text-white bg-success o-hidden h-100">
-        <div class="card-body">
-          <div class="card-body-icon">
-            <i class="fa fa-fw fa-wrench"></i>
-          </div>
-          <div class="mr-5">123 En Taller</div>
-        </div>
-          <a class="card-footer text-white clearfix small z-1" href="#">
-            <span class="float-left">Ver Detalles</span>
-            <span class="float-right">
-              <i class="fa fa-angle-right"></i>
-            </span>
-          </a>
-        </div>
-      </div>
-    </div>
+      
+    
     <div class="col-xl-3 col-sm-6 mb-3 float-rigth">
-      <a data-toggle="tooltip" data-placement="right" title="Nuevo Producto"
-        href="new_product.php" class="btn btn-outline-primary ">Nuevo Producto
+      <a data-toggle="tooltip" data-placement="right" title="Nuevo Asistente"
+        href="new_assistant.php" class="btn btn-outline-primary ">Nuevo Asistente
       </a>
     </div>
       <!-- Example DataTables Card-->
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-table"></i> Tabla Productos</div>
+          <i class="fa fa-table"></i> Tabla Asistentes</div>
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
               <thead>
                 <tr>
-                  <th>Codigo</th>
-                  <th>Producto</th>
-                  <th>Precio Entrada</th>
-                  <th>Precio Salida</th>
-                  <th>Unidad</th>
-                  <th>En Inventario</th>
+                  <th>Nro</th>  
+                  <th>Carnet Identidad</th>
+                  <th>Nombre</th>
+                  <th>Tel / Cel</th>
                   <th>Accion</th>
                   
                 </tr>
               </thead>
               <tfoot>
                 <tr>
-                    <th>Codigo</th>
-                    <th>Producto</th>
-                    <th>Precio Entrada</th>
-                    <th>Precio Salida</th>
-                    <th>Unidad</th>
-                    <th>En Inventario</th>
-                    <th>Accion</th>
+                  <th>Nro</th>  
+                  <th>Carnet Identidad</th>
+                  <th>Nombre</th>
+                  <th>Tel / Cel</th>
+                  <th>Accion</th>
+                  
                   
                 </tr>
               </tfoot>
               <tbody>
                 <?php
-                  while($producto= mysqli_fetch_array($sql_product)){
+                  while($client= mysqli_fetch_array($sql_client)){
                   
                     echo "<tr>";
-                      echo "<td>".$producto['code_product']."</td>";
-                      echo "<td>".$producto['name_product']."</td>";
-                      echo "<td>".$producto['precio_entrada']."</td>";
-                      echo "<td>".$producto['precio_salida']."</td>";
-                      echo "<td>".$producto['unidad']."</td>";
-                      echo "<td>".$producto['cantidad']."</td>";
+                      echo "<td>".$client['id']."</td>";
+                      echo "<td>".$client['carnet']."</td>";
+                      echo "<td>".$client['nombre']."</td>";
+                      echo "<td>".$client['celular']."</td>";
                       echo "<td>
-                        <a class='btn btn-xs  btn-warning' href='edit_product.php?id=$producto[id]'>
+                        <a class='btn btn-xs  btn-warning' href='edit_assistant.php?id=$client[id]'>
                           <i class='fa fa-fw fa-pencil'></i>
                         </a>
                       </td>";
