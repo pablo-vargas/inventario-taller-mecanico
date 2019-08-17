@@ -114,12 +114,7 @@
             </ul>
             </li>
             
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
-            <a class="nav-link" href="#">
-                <i class="fa fa-fw fa-info-circle"></i>
-                <span class="nav-link-text">Deudores Morosos</span>
-            </a>
-            </li>
+            
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Example Pages">
             <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseAdmi" data-parent="#exampleAccordion">
                 <i class="fa fa-fw fa-cog"></i>

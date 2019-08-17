@@ -199,6 +199,9 @@
                                 <a class='btn btn-xs  btn-warning' href='edit_workshop.php?id=$vehicle[Nro]'>
                                     <i class='fa fa-fw fa-pencil'></i>
                                 </a>
+                                <a class='btn btn-xs  btn-info' href='record_workshop.php?id=$vehicle[Nro]'>
+                                    <i class='fa fa-fw fa-info-circle'></i>
+                                </a>
                             </td>";
                     echo "</tr>";
                   }

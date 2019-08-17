@@ -215,9 +215,9 @@
                       echo "<td>".$producto['unidad']."</td>";
                       echo "<td>".$producto['cantidad']."</td>";
                       echo "<td>
-                        <input type='submit' value='' class='btn btn-xs  btn-warning' >
+                        <Button class='btn btn-xs  btn-warning' >
                           <i class='fa fa-fw fa-shopping-cart'></i>
-                        </input>
+                        </Button>
                       </td>";
                     echo "</tr>";
                   }
@@ -237,7 +237,13 @@
             d.getHours(),':'+(d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes())+':'+d.getSeconds());
           </script>
         </div>
+
       </div>
+    </div>
+    <div class="col-xl-6 col-sm-6 mb-12 float-rigth"">
+          <script>
+            document.write("<p>asdasdasdasdasdadadasdasdasdasdasdasdsd</p>");
+          </script>
     </div>
     <!-- /.container-fluid-->
     <!-- /.content-wrapper-->

@@ -72,21 +72,20 @@ CREATE TABLE vehicle_entry(
     FOREIGN KEY (id_assistant) references assistant(id)
 );
 
-SELECT count(*) FROM vehicle_entry V  inner join assign_work J on V.id= J.id_v
-			inner join advance_payments_job AJ on V.id=AJ.id_v
-            inner join inventory_consumption IC on V.id=IC.id_v
-            inner join advance_payments_inventory AI on V.id=AI.id_v
-            HAVING (SUM(J.price_job))>(SUM(AJ.amount)) OR (SUM(IC.precio_entrega*IC.cantidad_entrega))>(SUM(AI.amount)
-)  ;
+select * from jobs;
+insert into assign_work(id_v,id_job,price_job) VALUES (26,1,550);
 
 CREATE TABLE assign_work(
+	id int auto_increment primary key,
 	id_v int,
     id_job int,
     price_job float,
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id),
     FOREIGN KEY (id_job) REFERENCES jobs(id)
 );
+
 CREATE TABLE inventory_consumption(
+	id int auto_increment primary key,
 	id_p int,
     id_v int,
     fecha_entrega datetime,
@@ -97,13 +96,28 @@ CREATE TABLE inventory_consumption(
 );
 
 CREATE TABLE advance_payments_job(
+	id int auto_increment primary key,
 	id_v int,
     amount float,
     fecha_payment datetime,
     detalle varchar(100),
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
 );
+
+
+delimiter $
+create procedure add_advance_job(vehiculo int,monto float,detail varchar(100))
+begin
+	Set @ADELANTOS=(Select adelantos from vehicle_entry Where id=vehiculo);
+	INSERT INTO advance_payments_job(id_v,amount,fecha_payment,detalle)
+		VALUES(vehiculo,monto,NOW(),detail);
+	UPDATE vehicle_entry SET adelantos=@ADELANTOS+monto WHERE id= vehiculo;
+end $
+
+
+
 CREATE TABLE advance_payments_inventory(
+	id int auto_increment primary key,
 	id_v int,
     amount float,
     fecha_payment datetime,
@@ -111,7 +125,14 @@ CREATE TABLE advance_payments_inventory(
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
 );
 
-
+delimiter $
+create procedure add_advance_inv(vehiculo int,monto float,detail varchar(100))
+begin
+	Set @ADELANTOS=(Select adelantos_inventario from vehicle_entry Where id=vehiculo);
+	INSERT INTO advance_payments_inventory(id_v,amount,fecha_payment,detalle)
+		VALUES(vehiculo,monto,NOW(),detail);
+	UPDATE vehicle_entry SET adelantos_inventario=@ADELANTOS+monto WHERE id= vehiculo;
+end $
 
 
 /*INGRESO NUEVO VEHICULO*/
