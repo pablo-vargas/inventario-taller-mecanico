@@ -22,8 +22,8 @@
                                         V.marca AS VMarca,
                                         V.modelo AS VModelo,
                                         V.color AS VColor,
-                                        VI.fecha_ingreso AS FI,
-                                        VI.fecha_salida AS FS,
+                                        date(VI.fecha_ingreso) AS FI,
+                                        date(VI.fecha_salida) AS FS,
                                         VI.costo_inventario AS CI,
                                         VI.costo_trabajo AS CT,
                                         VI.tipo_trabajo AS TT,
@@ -102,33 +102,67 @@
                 location.href ="descuento_inv.php?id="+id+"&amount="+amount;
             }
         }
+
+        function entrega_productos(id,permiso,precio,prod){
+            if(permiso){
+                var price = parseFloat(prompt('Verificar precio de producto',precio));
+                var cantidad = parseFloat(prompt('Cantidad entrega de productos',1));
+                
+                location.href ="consumo_inv.php?id="+id+"&amount="+cantidad+"&prod="+prod+"&price="+price;
+            }else{
+                alert("Ud. No esta Autorizado");
+            }
+        }
+        function asignar_trabajo(id,permiso,p1,p2,p3,tipo,trabajo){
+            if(permiso){
+                var price=0;
+                if(tipo==1){
+                    price= p1;
+                }if(tipo==2){
+                    price =p2;
+                }
+                if(tipo ==3){
+                    price = p3;
+                }
+
+                var price_j = parseFloat(prompt('Verificar precio de trabajo',price));
+                
+                
+                location.href ="assign_job.php?id="+id+"&price="+price_j+"&job="+trabajo;
+            }else{
+                alert("Ud. No esta Autorizado");
+            }
+        }
+
+        
+
     </script>
 </head>
 <body  class="fixed-nav sticky-footer bg-dark" id="page-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">    
-        <a class="navbar-brand" href="inventory.php">Tamecon</a>
+        <a class="navbar-brand" href="../inventory.php">Tamecon</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-              <a class="nav-link" href="inventory.php">
+              <a class="nav-link" href="../inventory.php">
                   <i class="fa fa-fw fa-home"></i>
                   <span class="nav-link-text">Inicio</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
-              <a class="nav-link" href="new_product.php">
+              <a class="nav-link" href="sale/venta.php">
                   <i class="fa fa-fw fa-usd"></i>
                   <span class="nav-link-text">Vender</span>
                   <span class="badge badge-pill badge-primary">12 New</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
-              <a class="nav-link" href="tables.html">
+              <a class="nav-link" href="sale/detail_sale.php">
                   <i class="fa fa-fw fa-table"></i>
-                  <span class="nav-link-text">Tables</span>
+                  <span class="nav-link-text">Detalle Ventas</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
@@ -156,13 +190,13 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseExamplePages">
                 <li>
-                <a href="login.html">Ayudantes</a>
+                <a href="../layout_assistant.php">Ayudantes</a>
                 </li>
                 <li>
-                <a href="register.html">Clientes</a>
+                <a href="../layout_clients.php">Clientes</a>
                 </li>
                 <li>
-                <a href="forgot-password.html">Vehiculos</a>
+                <a href="../layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
                 <a href="blank.html">Proveedores</a>
@@ -170,12 +204,7 @@
             </ul>
             </li>
             
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
-            <a class="nav-link" href="#">
-                <i class="fa fa-fw fa-info-circle"></i>
-                <span class="nav-link-text">Deudores Morosos</span>
-            </a>
-            </li>
+            
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Example Pages">
             <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseAdmi" data-parent="#exampleAccordion">
                 <i class="fa fa-fw fa-cog"></i>
@@ -220,26 +249,32 @@
             </li>
             <li class="breadcrumb-item active">Registro Vehiculo</li>
             </ol>
-            <div class="col-xl-3 col-sm-6 mb-3 float-rigth">
-                <a data-toggle="tooltip" data-placement="right" title="Imprimir"
-                    href="print_pdf_job.php?id=<?php echo $id_vehicle?>" class="btn btn-outline-primary ">Imprimir Registro de Trabajo
-                </a>
+            <div class="col-xl-12 col-sm-6 mb-3 float-rigth">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#asignar_job">ASIGNAR TRABAJO</button>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#asignar_inv">CONSUMO INVENTARIO</button>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#salida">REGISTRO SALIDA DE VEHICULO</button>
+                
             </div>
 
             <div class="card border-secondary mb-3">
                 <div class="card-header"><?php echo $row_product['NCliente'];?> ----- CI: <?php echo $row_product['CCliente'];?> ----- TEL: <?php echo $row_product['CTelefono'];?></div>
                 <div class="card-body text-secondary">
-                    <h5 class="card-title">Placa Vehiculo : <?php echo $row_product['VPlaca'];?> </h5>
-                <p class="card-text">Marca : <?php echo $row_product['VMarca'];?><br> 
+                    <h5 class="card-title"> Nro Registro : <?php echo $id_vehicle;?> </h5>
+                <p class="card-text"> 
+                    Placa Vehiculo : <?php echo $row_product['VPlaca'];?><br>
+                    Marca : <?php echo $row_product['VMarca'];?><br> 
+                   
                     Modelo : <?php echo $row_product['VModelo'];?> <br>
                     Color : <?php echo $row_product['VColor'];?> <br><br>
                     Asistente a Cargo : <?php echo $row_product['NAsist'];?><br><br>
                     Fecha de Ingreso del Vehiculo : <?php echo $row_product['FI'];?> <br>
                     Fecha de Salida del Vehiculo : <?php echo $row_product['FS'];?> <br>
-                    Costo de trabajo realizado : <?php echo $row_product['CT'];?> <br>
-                    Costo consumo de inventario : <?php echo $row_product['CI'];?> <br>
+                    
+                    
                     Tipo de trabajo realizado : <?php echo $tipo_trabajo;?> <br><br>
                     Adelantos - Descuentos <br>
+                    TRABAJO REALIZADO <br>
+                    Costo de trabajo realizado : <?php echo $row_product['CT'];?> <br>
                     Adelantos de trabajo realizado : <?php echo $row_product['AJ'];?>
                         <button class="badge badge-primary" 
                             onClick="<?php echo "advance_payments_job($id_vehicle,'$PERMTALLER')";?>">
@@ -253,7 +288,10 @@
                         <button  class="badge badge-danger" 
                             onClick="<?php echo "descuento_job($id_vehicle,'$PERMTALLER')";?>">
                                 registrar descuento de trabajo
-                        </button> <br><br>
+                        </button> <br>
+                    Deuda de Trabajo : <?php echo $row_product['DDT'];?><br><br>
+                    MATERIALES <br>
+                    Costo consumo de inventario : <?php echo $row_product['CI'];?> <br>
                     Adelantos consumo de inventario : <?php echo $row_product['AI'];?>
                         <button  class="badge badge-primary"
                             onClick="<?php echo "advance_payments_inv($id_vehicle,'$PERMINV')";?>">
@@ -268,14 +306,12 @@
                         <button  class="badge badge-danger"
                         onClick="<?php echo "descuento_inv($id_vehicle,'$PERMINV')";?>">
                             registrar descuento de inventario
-                        </button> <br><br>
+                        </button> <br>
                     Deuda de Inventario : <?php echo $row_product['DDI'];?><br>
-                    Deuda de Trabajo : <?php echo $row_product['DDT'];?><br>
+                    
                                     
 
                 </p>
-                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#asignar_job">ASIGNAR TRABAJO</button>
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#asignar_inv">CONSUMO INVENTARIO</button>
                 </div>
             </div>
 
@@ -410,18 +446,22 @@
                             <tbody>
                                 <?php
                                 $sql_product =mysqli_query($conexion,"SELECT * FROM product");
-        
+                                $PI=0;
+                                if($PERMINV =='SI'){
+                                    $PI=1;
+                                }
                                 while($producto= mysqli_fetch_array($sql_product)){
                                 
                                     echo "<tr>";
-                                    echo "<td>".$producto['code_product']."</td>";
-                                    echo "<td>".$producto['name_product']."</td>";
-                                    
-                                    echo "<td>
-                                        <a class='btn btn-xs  btn-warning' href='edit_product.php?id=$producto[id]'>
-                                        <i class='fa fa-fw fa-pencil'></i>
-                                        </a>
-                                    </td>";
+                                        echo "<td>".$producto['code_product']."</td>";
+                                        echo "<td>".$producto['name_product']."</td>";
+                                        //$id_vehicle,"."'$PERMINV',".$producto['precio_salida'].",".$producto['id'])."'
+                                        echo "<td>
+                                            <button class='btn btn-xs  btn-primary'
+                                             onclick='entrega_productos(".$id_vehicle.",".$PI.",".$producto['precio_salida'].",".$producto['id'].")'>
+                                            <i class='fa fa-plus-circle'></i>
+                                            </button>
+                                        </td>";
                                     echo "</tr>";
                                 }
                                 
@@ -459,69 +499,55 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                        <i class="fa fa-table"></i> Tabla Trabajos</div>
-                        <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                <th>Tipo de Trabajo</th>
-                                
-                                <th>Accion</th>
-                                
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                <th>Tipo de Trabajo</th>
-                                
-                                <th>Accion</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <?php
-                                    $sql_client =mysqli_query($conexion,"SELECT * FROM jobs");
-                                    while($job= mysqli_fetch_array($sql_client)){
-                                    
-                                        echo "<tr>";
-                                        echo "<td>".$job['trabajo']."</td>";
-                                       
-                                        echo "<td>
-                                            <a class='btn btn-xs  btn-warning' href='edit_job.php?id=$job[id]'>
-                                            <i class='fa fa-fw fa-pencil'></i>
-                                            </a>
-                                        </td>";
-                                        echo "</tr>";
-                                    }
-                                
-                                ?>  
+                    <form action="assign_job.php" method="POST">
+                        <div class="form-group">
+                            <input type="hidden" name="id" value="<?php echo $id_vehicle;?>">
+                            <label for="exampleInputEmail1">Detalle de Trabajo</label>
+                            <input type="text" required class="form-control" id="exampleInputEmail1" 
+                                placeholder="detalles del trabajo realizado" name ="detail">
                             
-                            </tbody>
-                            </table>
                         </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">Precio de Trabajo</label>
+                            <input type="text" required class="form-control" id="exampleInputPassword1"
+                                 placeholder="precio de trabajo realizado" name="price">
                         </div>
-                        <div class="card-footer small text-muted">
-                        Actualizado
-                        <script type="text/javascript">
-                            var d = new Date();
-                            document.write('Fecha: '+d.getDate()+'/'+
-                            (d.getMonth()+1),'/'+d.getFullYear(),' '+
-                            d.getHours(),':'+(d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes())+':'+d.getSeconds());
-                        </script>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            
                         </div>
+                       
+                    </form>
+                </div>
+                
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="salida" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalScrollableTitle">Fecha de Salida</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card mb-3">
+                       <form name="out" action="salida_vehicle.php" method="POST">
+                            <input type="hidden" name="id" value="<?php echo $id_vehicle;?>"> <br>
+                            <input type="date" name="fecha"> <br>
+                            <input type="submit">
+                       </form>
                     </div>
-
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
                 </div>
                 </div>
             </div>
         </div>
-        
                     
 
         <!-- Bootstrap core JavaScript-->

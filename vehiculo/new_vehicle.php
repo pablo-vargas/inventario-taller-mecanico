@@ -30,29 +30,29 @@
 </head>
 <body  class="fixed-nav sticky-footer bg-dark" id="page-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">    
-        <a class="navbar-brand" href="inventory.php">Tamecon</a>
+        <a class="navbar-brand" href="../inventory.php">Tamecon</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-              <a class="nav-link" href="inventory.php">
+              <a class="nav-link" href="../inventory.php">
                   <i class="fa fa-fw fa-home"></i>
                   <span class="nav-link-text">Inicio</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
-              <a class="nav-link" href="new_product.php">
+              <a class="nav-link" href="sale/venta.php">
                   <i class="fa fa-fw fa-usd"></i>
                   <span class="nav-link-text">Vender</span>
                   <span class="badge badge-pill badge-primary">12 New</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
-              <a class="nav-link" href="tables.html">
+              <a class="nav-link" href="sale/detail_sale.php">
                   <i class="fa fa-fw fa-table"></i>
-                  <span class="nav-link-text">Tables</span>
+                  <span class="nav-link-text">Detalle Ventas</span>
               </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
@@ -80,13 +80,13 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseExamplePages">
                 <li>
-                <a href="login.html">Ayudantes</a>
+                <a href="../layout_assistant.php">Ayudantes</a>
                 </li>
                 <li>
-                <a href="register.html">Clientes</a>
+                <a href="../layout_clients.php">Clientes</a>
                 </li>
                 <li>
-                <a href="forgot-password.html">Vehiculos</a>
+                <a href="layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
                 <a href="blank.html">Proveedores</a>
@@ -94,12 +94,7 @@
             </ul>
             </li>
             
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
-            <a class="nav-link" href="#">
-                <i class="fa fa-fw fa-info-circle"></i>
-                <span class="nav-link-text">Deudores Morosos</span>
-            </a>
-            </li>
+            
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Example Pages">
             <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseAdmi" data-parent="#exampleAccordion">
                 <i class="fa fa-fw fa-cog"></i>
@@ -134,6 +129,7 @@
         </ul>
         </div>
     </nav>
+
     <div class="content-wrapper">
         <div class="container-fluid">
             <ol class="breadcrumb">

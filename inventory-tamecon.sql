@@ -72,8 +72,6 @@ CREATE TABLE vehicle_entry(
     FOREIGN KEY (id_assistant) references assistant(id)
 );
 
-select * from jobs;
-insert into assign_work(id_v,id_job,price_job) VALUES (26,1,550);
 
 CREATE TABLE assign_work(
 	id int auto_increment primary key,
@@ -83,6 +81,18 @@ CREATE TABLE assign_work(
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id),
     FOREIGN KEY (id_job) REFERENCES jobs(id)
 );
+select count(id_job),id_job,price_job from assign_work where id_v=26 Group BY id_job;
+select count(id_job),id_job,price_job,J.trabajo,(price_job*count(id_job)) AS total from assign_work W 
+inner join jobs J on W.id_job=J.id where id_v=26 Group BY id_job;
+
+Select (costo_trabajo-descuento_trabajo) AS total, adelantos,(costo_trabajo-descuento_trabajo-adelantos) as saldo
+ from vehicle_entry where id = 26;
+
+select carnet_identidad,name_client,nombre,V.placa,VD.marca,VD.modelo,VD.color,date(fecha_ingreso),date(fecha_salida)
+from vehicle_entry V inner join assistant A on V.id_assistant= A.id
+					inner join clients C on V.carnet_cliente = C.carnet_identidad
+                    inner join vehicle VD on V.placa= VD.placa
+where V.id=26;
 
 CREATE TABLE inventory_consumption(
 	id int auto_increment primary key,
@@ -93,7 +103,41 @@ CREATE TABLE inventory_consumption(
     cantidad_entrega float,
 	FOREIGN KEY (id_p) REFERENCES product(id),
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
-);
+); 
+select * from inventory_consumption where id_v=26;
+
+
+delimiter $
+create procedure consumo_inv(prod int , vehiculo int ,precio float,cant float)
+begin
+	Set @ADELANTOS=(Select costo_inventario from vehicle_entry Where id=vehiculo);
+    set @Cant=(Select cantidad from product Where id =prod);
+    
+	Insert Into inventory_consumption(id_p,id_v,fecha_entrega,precio_entrega,cantidad_entrega) 
+    Values(prod,vehiculo,NOW(),precio,cant);
+    
+    UPDATE vehicle_entry SET costo_inventario=(@ADELANTOS+(precio*cant))WHERE id=vehiculo;
+    UPDATE product SET cantidad=@Cant-cant WHERE id=prod;
+end $
+
+select * from jobs;
+select * from vehicle_entry;
+select * from assign_work;
+call assign_job(1,26,250);
+
+delimiter $
+create procedure assign_job(job int , vehiculo int ,precio float)
+begin
+	Set @cost=(Select costo_trabajo from vehicle_entry Where id=vehiculo);
+	
+    
+	Insert Into assign_work(id_v,id_job,price_job) 
+    Values(vehiculo,job,precio);
+    
+    UPDATE vehicle_entry SET costo_trabajo=(@cost+precio) WHERE id=vehiculo;
+    
+end $
+
 
 CREATE TABLE advance_payments_job(
 	id int auto_increment primary key,
@@ -105,17 +149,6 @@ CREATE TABLE advance_payments_job(
 );
 
 
-delimiter $
-create procedure add_advance_job(vehiculo int,monto float,detail varchar(100))
-begin
-	Set @ADELANTOS=(Select adelantos from vehicle_entry Where id=vehiculo);
-	INSERT INTO advance_payments_job(id_v,amount,fecha_payment,detalle)
-		VALUES(vehiculo,monto,NOW(),detail);
-	UPDATE vehicle_entry SET adelantos=@ADELANTOS+monto WHERE id= vehiculo;
-end $
-
-
-
 CREATE TABLE advance_payments_inventory(
 	id int auto_increment primary key,
 	id_v int,
@@ -124,6 +157,15 @@ CREATE TABLE advance_payments_inventory(
     detalle varchar(100),
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
 );
+
+delimiter $
+create procedure add_advance_job(vehiculo int,monto float,detail varchar(100))
+begin
+	Set @ADELANTOS=(Select adelantos from vehicle_entry Where id=vehiculo);
+	INSERT INTO advance_payments_job(id_v,amount,fecha_payment,detalle)
+		VALUES(vehiculo,monto,NOW(),detail);
+	UPDATE vehicle_entry SET adelantos=@ADELANTOS+monto WHERE id= vehiculo;
+end $
 
 delimiter $
 create procedure add_advance_inv(vehiculo int,monto float,detail varchar(100))

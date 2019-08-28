@@ -19,7 +19,9 @@
   $result_vehicle = $conexion->query($sql_vehicle);
   $vechicle = $result_vehicle->fetch_assoc();
 
-  $sql_entry ="SELECT COUNT(*) total FROM vehicle_entry";
+  $sql_entry ="SELECT COUNT(*) total FROM vehicle_entry where (year(fecha_salida) = '0000') OR (costo_trabajo>(descuento_trabajo+adelantos) OR 
+  costo_inventario>(descuento_inventario+adelantos_inventario))";
+
   $result_vehicle_entry = $conexion->query($sql_entry);
   $vechicle_entry = $result_vehicle_entry->fetch_assoc();
 
@@ -168,10 +170,10 @@
                   <i class="fa fa-fw fa-database"></i>
                 </div>
                 <div class="mr-5">
-                <?php echo $jobs['total'].'';?> Trabajos
+                Historial Vehiculos
                 </div>
                 </div>
-                  <a class="card-footer text-white clearfix small z-1" href="jobs/layout_jobs.php">
+                  <a class="card-footer text-white clearfix small z-1" href="records/record_vehicle.php">
                     <span class="float-left">Ver Detalles</span>
                     <span class="float-right">
                       <i class="fa fa-angle-right"></i>
@@ -187,9 +189,9 @@
               <div class="card-body-icon">
                 <i class="fa fa-fw fa-list"></i>
               </div>
-              <div class="mr-5"><?php echo $vechicle_entry_deuda['total'].'';?> Deudas</div>
+              <div class="mr-5">Historial Asistentes </div>
             </div>
-            <a class="card-footer text-white clearfix small z-1" href="#">
+            <a class="card-footer text-white clearfix small z-1" href="records/record_assistant.php">
               <span class="float-left">Ver Detalles</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>

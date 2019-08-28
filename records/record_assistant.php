@@ -2,28 +2,19 @@
   include("../database/conexion.php");
   session_start();
   if(!isset($_SESSION['id_user'])){
-    header("Location: index.php");
+    header("Location: ../index.php");
   }
- 
-
   $id_user = $_SESSION['id_user'];
-  $sql = "SELECT name_user,id FROM usuario WHERE id = '$id_user'";
+  $sql = "SELECT name_user,id,permission_inventory,permission_taller FROM usuario WHERE id = '$id_user'";
   $resultado = $conexion->query($sql);
   $row = $resultado->fetch_assoc();
 
-  //id GET JOB
-  $id_vehicle = $_GET['id'];
-  $result_product = $conexion->query("SELECT id,date(fecha_ingreso) AS fec ,placa,id_assistant,tipo_trabajo,carnet_cliente FROM vehicle_entry WHERE id=$id_vehicle");
-  $row_product = $result_product->fetch_assoc();
-  $id_av=utf8_decode($row_product['id_assistant']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Editar Vehiculo en taller</title>
+    <title>Vehiculos en Taller</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS-->
     <link href="../design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +23,8 @@
     <!-- Page level plugin CSS-->
     <link href="../design/css/sb-admin.css" rel="stylesheet">
     <link href="../design/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-  
+    
+    
 </head>
 <body  class="fixed-nav sticky-footer bg-dark" id="page-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">    
@@ -92,7 +84,7 @@
                 <a href="../layout_clients.php">Clientes</a>
                 </li>
                 <li>
-                <a href="../layout_vehiculo.php">Vehiculos</a>
+                <a href="../vehiculo/layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
                 <a href="blank.html">Proveedores</a>
@@ -108,7 +100,7 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseAdmi">
                 <li>
-                <a href="login.html">Usuarios</a>
+                <a href="#">Usuarios</a>
                 </li>
                 </li>
             </ul>
@@ -135,129 +127,164 @@
         </ul>
         </div>
     </nav>
+
     <div class="content-wrapper">
         <div class="container-fluid">
+        
             <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="layout_workshop.php">Inicio / Taller </a>
-                </li>
-                <li class="breadcrumb-item active">Editar Vehiculo en taller</li>
+            <li class="breadcrumb-item">
+                <a href="../inventory.php">Inicio </a>
+            </li>
+            <li class="breadcrumb-item active">Historial de mecanico</li>
             </ol>
-            <?php
-            
-                if(isset($_POST['register'])){
-                    $carnet = mysqli_real_escape_string($conexion,$_POST['carnet']);
-                    $placa = mysqli_real_escape_string($conexion,$_POST['placa']); 
-                    $assist = mysqli_real_escape_string($conexion,$_POST['assistant']);
-                    $fecha = mysqli_real_escape_string($conexion,$_POST['fecha']);
-                    $tipo = mysqli_real_escape_string($conexion,$_POST['costo']);
-
-                    
-                    $add_product = "CALL edit_workshop($id_vehicle,'$placa',$carnet,$assist,'$fecha',$tipo)";
-                    $ejecutar = $conexion->query($add_product);
-
-                    echo "<script> window.location = 'edit_workshop.php?id=$id_vehicle'</script>";
-                }
-            ?>
-            <form class="form-horizontal" method="POST" enctype="multipart/form-data" id="addproduct" 
+            <form class="form-horizontal" method="POST"
                 action="<?php $_SERVER['PHP_SELF']; ?>" role="form">
-
-                <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Carnet *</label>
-                    <div class="col-md-6">
-                        <input type="text" name="carnet"  required id="product_code" class="form-control" 
-                        id="barcode" placeholder="Numero de Carnet de Cliente" value="<?php echo $row_product['carnet_cliente'];?>">
+                <div class="form-row">
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom01">id o carnet de mecanico</label>
+                        <input type="text" name="assistant" class="form-control" id="validationCustom01"   required>
+                        
                     </div>
-                </div> 
-                <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Placa *</label>
-                    <div class="col-md-6">
-                        <input type="text" name="placa"  required id="product_code" class="form-control" 
-                        id="barcode" placeholder="Placa de Vehiculo" value="<?php echo $row_product['placa'];?>">
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustom02">Fecha Inicial</label>
+                        <input type="date" name="date1" class="form-control" required>
+                    
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Asistente a Cargo *</label>
-                    <div class="col-md-6">
-                        <select name="assistant" class="form-control" >
-                            <option value ="">Selecciona un Asistente</option>
-                            <?php
-                                
-                                $sql_assistant =mysqli_query($conexion,"SELECT * FROM assistant");
-                                
-                                
-                                while($assistant= mysqli_fetch_array($sql_assistant)){
-                                    if($assistant['id'] ==$row_product['id_assistant'] ){
-                                        echo "<option value='$assistant[id]' selected>". $assistant['nombre']."</option>";
-                                    }else{
-                                        echo "<option value='$assistant[id]' >". $assistant['nombre']."</option>";    
-                                    }
-                                }
-                            ?>
-                        </select>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Fecha Ingreso  *</label>
-                    <div class="col-md-6">
-                        <input type="date" name="fecha" required class="form-control" 
-                            value="<?php echo $row_product['fec'];?>"
-                        >
+                    <div class="col-md-4 mb-3">
+                        <label for="validationCustomUsername">Fecha Final</label>
+                        <div class="input-group">
+                            
+                            <input type="date" name="date2" class="form-control" aria-describedby="inputGroupPrepend" required>
+                            
+                        </div>
                     </div>
                 </div>
                 
-                
-                <div class="form-group">
-                    <label  class="col-lg-2 control-label">Tipo de trabajo</label>
-                    <div class="col-md-6">
-                        <select name="costo" class="form-control" >
-                            <option value ="">Selecciona el tipo de trabajo</option>
-                            <option value ="1" <?php if($row_product['tipo_trabajo']== '1') echo "selected";?>>publico</option>
-                            <option value ="2" <?php if($row_product['tipo_trabajo']== '2') echo "selected";?>>intermedio</option>
-                            <option value ="3" <?php if($row_product['tipo_trabajo']== '3') echo "selected";?>>con factura</option> 
-                        </select>
-                    </div>
-                </div>
-                
-               
-
-                <div class="form-group">
-                    <div class="col-lg-offset-2 col-lg-10">
-                        <button type="submit" name="register" class="btn btn-primary">Modificar Vehiculo en taller</button>
-                    </div>
-                </div>
+                <button class="btn btn-primary" name="buscar" type="submit">Ver Historial</button>             
             </form>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                <i class="fa fa-table"></i> Historial de Mecanico</div>
+                <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                        <th>Nro</th>
+                        <th>Placa</th>
+                        <th>Cliente</th>
+                        <th>Asistente</th>
+                        <th>fecha ingreso</th>
+                        <th>Accion</th>
+                        
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                        <th>Nro</th>
+                        <th>Placa</th>
+                        <th>Cliente</th>
+                        <th>Asistente</th>
+                        <th>Fecha ingreso</th>
+                        <th>Accion</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <?php
+                        if(isset($_POST['buscar'])){
+
+                            $id_a = mysqli_real_escape_string($conexion,$_POST['assistant']);
+                            $fechai = mysqli_real_escape_string($conexion,$_POST['date1']); 
+                            $fechaf = mysqli_real_escape_string($conexion,$_POST['date2']);
+
+                            $sql_vehicle =mysqli_query($conexion,"SELECT
+                            V.id AS Nro,V.placa,
+                            V.carnet_cliente AS cliente,
+                            date(V.fecha_ingreso) AS fi,
+                            A.nombre as assist
+                            FROM vehicle_entry V INNER JOIN assistant A on V.id_assistant= A.id
+                            where (id_assistant=".$id_a." OR A.carnet=$id_a) AND (date(fecha_ingreso) BETWEEN '".$fechai."' AND '".$fechaf."')");
+                            while($vehicle= mysqli_fetch_array($sql_vehicle)){
+                            
+                                echo "<tr>";
+                                echo "<td>".$vehicle['Nro']."</td>";
+                                echo "<td>".$vehicle['placa']."</td>";
+                                echo "<td>".$vehicle['cliente']."</td>";
+                                echo "<td>".$vehicle['assist']."</td>";
+                                echo "<td>".$vehicle['fi']."</td>";
+                                echo "<td>
+                                            <a class='btn btn-xs  btn-info' target='blank' href='../workshop/record_workshop.php?id=$vehicle[Nro]'>
+                                                <i class='fa fa-fw fa-info-circle'></i>
+                                            </a>
+                                        </td>";
+                                echo "</tr>";
+                            }
+                        }
+                        
+                        ?>  
+                    
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+                <div class="card-footer small text-muted">
+                Actualizado
+                <script type="text/javascript">
+                    var d = new Date();
+                    document.write('Fecha: '+d.getDate()+'/'+
+                    (d.getMonth()+1),'/'+d.getFullYear(),' '+
+                    d.getHours(),':'+(d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes())+':'+d.getSeconds());
+                </script>
+                </div>
+            </div>
+
+
         </div>
+    
+   
         <footer class="sticky-footer">
             <div class="container">
                 <div class="text-center">
-                <small>Copyright © Tamecon 2019</small>
+                    <small>Copyright © Tamecon 2019</small>
                 </div>
             </div>
         </footer>
+    
         <a class="scroll-to-top rounded" href="#page-top">
             <i class="fa fa-angle-up"></i>
         </a>
         <!-- Logout Modal-->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        
+            
+       
+        <div class="modal fade" id="salida" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">¿Listo para salir?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                    <h5 class="modal-title" id="exampleModalScrollableTitle">Fecha de Salida</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">Seleccione "Cerrar sesión" para confirmar</div>
+                <div class="modal-body">
+                    <div class="card mb-3">
+                       <form name="out" action="salida_vehicle.php" method="POST">
+                            <input type="hidden" name="id" value="<?php echo $id_vehicle;?>"> <br>
+                            <input type="date" name="fecha"> <br>
+                            <input type="submit">
+                       </form>
+                    </div>
+                </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" href="../logout.php">Cerrar sesión</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
                 </div>
                 </div>
             </div>
         </div>
+                    
+
+        <!-- Bootstrap core JavaScript-->
         <script src="../vendor/jquery/jquery.min.js"></script>
         <script src="../design/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Core plugin JavaScript-->
@@ -271,6 +298,7 @@
         <!-- Custom scripts for this page-->
         <script src="../js/sb-admin-datatables.min.js"></script>
         <script src="../js/sb-admin-charts.min.js"></script>
-    </div>
+  </div>
 </body>
+
 </html>

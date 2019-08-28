@@ -57,10 +57,9 @@
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->SetFont('Arial','',10);
-    $pdf->Cell(0,10,"Cliente: ".$row_product['NCliente']." _____ Fecha: ".$row_product['FI'],2,1,'C');
+    $pdf->Cell(0,10,"Cliente: ".$row_product['NCliente']." _____ Fecha: ".$row_product['FI']." _____ Nro: ".$id_vehicle,2,1,'C');
     $pdf->Cell(0,10,"Placa: ".$row_product['VPlaca']." _ Marca: ".$row_product['VPlaca']." _ Modelo: ".$row_product['VModelo']." _ Color: ".$row_product['VColor'],2,1,'C');
-    $pdf->Cell(110 ,10,"Cliente: ".$row_product['NCliente']." _____ Fecha: ".$row_product['FI'],0,1,'C');
-    
+   
     $pdf->Cell(20,8,'#',1,0,'C',0);
     $pdf->Cell(115,8,'Trabajo',1,0,'C',0);
     $pdf->Cell(55,8,'Costo',1,1,'C',0);
