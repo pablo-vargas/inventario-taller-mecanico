@@ -111,7 +111,7 @@
                 <a href="vehiculo/layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
-                <a href="blank.html">Proveedores</a>
+                <a href="provider/layout_provider.php">Proveedores</a>
                 </li>
             </ul>
             </li>

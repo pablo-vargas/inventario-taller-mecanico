@@ -1,19 +1,14 @@
 <?php
-  include("database/conexion.php");
+  include("../database/conexion.php");
   session_start();
   if(!isset($_SESSION['id_user'])){
-    header("Location: index.php");
+    header("Location: ../index.php");
   }
 
   $id_user = $_SESSION['id_user'];
   $sql = "SELECT name_user,id FROM usuario WHERE id = '$id_user'";
   $resultado = $conexion->query($sql);
   $row = $resultado->fetch_assoc();
-
-  //id GET PRODUCTO
-  $id_client = $_GET['id'];
-  $result_product = $conexion->query("SELECT * FROM clients WHERE carnet_identidad =$id_client");
-  $row_client = $result_product->fetch_assoc();
  
 ?>
 <!DOCTYPE html>
@@ -22,26 +17,27 @@
     <meta charset="UTF-8">
     
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Editar Cliente</title>
+    <title>Nuevo Vehiculo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS-->
+    <link href="../design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom fonts for this template-->
-    <link href="design/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../design/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <!-- Page level plugin CSS-->
-    <link href="design/css/sb-admin.css" rel="stylesheet">
-    <link href="design/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../design/css/sb-admin.css" rel="stylesheet">
+    <link href="../design/datatables/dataTables.bootstrap4.css" rel="stylesheet">
   
 </head>
 <body  class="fixed-nav sticky-footer bg-dark" id="page-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">    
-        <a class="navbar-brand" href="inventory.php">Tamecon</a>
+        <a class="navbar-brand" href="../inventory.php">Tamecon</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-              <a class="nav-link" href="inventory.php">
+              <a class="nav-link" href="../inventory.php">
                   <i class="fa fa-fw fa-home"></i>
                   <span class="nav-link-text">Inicio</span>
               </a>
@@ -84,13 +80,13 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseExamplePages">
                 <li>
-                <a href="layout_assistant.php">Ayudantes</a>
+                <a href="../layout_assistant.php">Ayudantes</a>
                 </li>
                 <li>
-                <a href="layout_clients.php">Clientes</a>
+                <a href="../layout_clients.php">Clientes</a>
                 </li>
                 <li>
-                <a href="vehiculo/layout_vehiculo.php">Vehiculos</a>
+                <a href="../vehiculo/layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
                 <a href="layout_provider.php">Proveedores</a>
@@ -138,51 +134,85 @@
         <div class="container-fluid">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <a href="layout_clients.php">Inicio / Clientes </a>
+                    <a href="layout_provider.php">Inicio / Proveedores </a>
                 </li>
-                <li class="breadcrumb-item active">Editar Cliente</li>
+                <li class="breadcrumb-item active">Nuevo Proveedor</li>
             </ol>
             <?php
                 if(isset($_POST['register'])){
-                    $code = mysqli_real_escape_string($conexion,$_POST['code']);
-                    $name = mysqli_real_escape_string($conexion,$_POST['name']);
-                    $telefono = mysqli_real_escape_string($conexion,$_POST['tel']);
-                    $edit_client = "CALL edit_client($id_client,'$name','   $telefono')";
-                    $ejecutar = $conexion->query($edit_client);
+                    $carnet = mysqli_real_escape_string($conexion,$_POST['carnet']);
+                    $nombre = mysqli_real_escape_string($conexion,$_POST['nombre']); 
+                    $telefono = mysqli_real_escape_string($conexion,$_POST['contacto']);
+                    $detalle = mysqli_real_escape_string($conexion,$_POST['detail']);
+                    
+                    $verificar = "SELECT * FROM provider WHERE carnet=$carnet";
+                    $resultado_consulta= $conexion->query($verificar);
+                    $rows1 = $resultado_consulta->num_rows; 
+                    if($rows1 > 0){
+                        echo "  <div class='alert alert-danger' role='alert'>
+                                    Ya existe un proveedor con ese CI / NIT!
+                                </div>";
+                    }else{
+                        $add_product = "CALL add_provider($carnet,'$nombre','$telefono','$detalle')";
+                        $ejecutar = $conexion->query($add_product);
+                        
+                        
+                        $resultado_consulta= $conexion->query($verificar);
+                        $rows = $resultado_consulta->num_rows; 
+                        if($rows > 0){
 
-                    echo "<script> window.location = 'edit_client.php?id=$id_client'</script>";
+                            echo "  <div class='alert alert-success' role='alert'>
+                                        Registro Exitoso!
+                                    </div>";
+                        }else{
+                            echo "  <div class='alert alert-danger' role='alert'>
+                                        Registro Fallido!
+                                    </div>";
+                            
+                        }
+                    }
+                    
+
+                    
                 }
             ?>
             <form class="form-horizontal" method="POST" enctype="multipart/form-data" id="addproduct" 
                 action="<?php $_SERVER['PHP_SELF']; ?>" role="form">
 
+
                 <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Carnet </label>
+                    <label for="inputEmail1" class="col-lg-2 control-label">CI / NIT *</label>
                     <div class="col-md-6">
-                        <input type="text" name="code" id="product_code" class="form-control" 
-                        id="barcode" placeholder="Carnet cliente" value="<?php echo $row_client['carnet_identidad'];?>">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Nombre *</label>
-                    <div class="col-md-6">
-                        <input type="text" name="name" required class="form-control" id="name" 
-                        value="<?php echo $row_client['name_client'];?>"
-                        placeholder="Nombre del cliente">
+                        <input type="text" name="carnet" required class="form-control" id="name" 
+                        placeholder="CI / NIT proveedor">
                     </div>
                 </div>
                 
+                
                 <div class="form-group">
-                    <label for="inputEmail1" class="col-lg-2 control-label">Tel/Cel :</label>
+                    <label for="inputEmail1" class="col-lg-2 control-label">Nombre</label>
                     <div class="col-md-6">
-                        <input type="text" name="tel" class="form-control" id="inputEmail1"
-                            value="<?php echo $row_client['telefono'];?>" placeholder="Telefono/Celular">
+                        <input type="text" name="nombre" class="form-control" id="inputEmail1" 
+                        placeholder="nombre proveedor">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="inputEmail1" class="col-lg-2 control-label">Contacto</label>
+                    <div class="col-md-6">
+                        <input type="text" name="contacto" class="form-control" id="inputEmail1" 
+                        placeholder="Teléfono proveedor">
+                    </div>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="exampleFormControlTextarea1">Detalles Proveedor</label>
+                    <textarea class="form-control" name="detail" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+
 
                 <div class="form-group">
                     <div class="col-lg-offset-2 col-lg-10">
-                        <button type="submit" name="register" class="btn btn-primary">Modificar Cliente</button>
+                        <button type="submit" name="register" class="btn btn-primary">Agregar proveedor</button>
                     </div>
                 </div>
             </form>
@@ -210,24 +240,24 @@
                 <div class="modal-body">Seleccione "Cerrar sesión" para confirmar</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" href="logout.php">Cerrar sesión</a>
+                    <a class="btn btn-primary" href="../logout.php">Cerrar sesión</a>
                 </div>
                 </div>
             </div>
         </div>
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="design/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../vendor/jquery/jquery.min.js"></script>
+        <script src="../design/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+        <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
         <!-- Page level plugin JavaScript-->
-        <script src="vendor/chart.js/Chart.min.js"></script>
-        <script src="design/datatables/jquery.dataTables.js"></script>
-        <script src="design/datatables/dataTables.bootstrap4.js"></script>
+        <script src="../vendor/chart.js/Chart.min.js"></script>
+        <script src="../design/datatables/jquery.dataTables.js"></script>
+        <script src="../design/datatables/dataTables.bootstrap4.js"></script>
         <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin.min.js"></script>
+        <script src="../js/sb-admin.min.js"></script>
         <!-- Custom scripts for this page-->
-        <script src="js/sb-admin-datatables.min.js"></script>
-        <script src="js/sb-admin-charts.min.js"></script>
+        <script src="../js/sb-admin-datatables.min.js"></script>
+        <script src="../js/sb-admin-charts.min.js"></script>
     </div>
 </body>
 </html>
