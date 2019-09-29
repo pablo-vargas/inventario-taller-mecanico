@@ -1,65 +1,69 @@
 <?php
-  include("database/conexion.php");
+  include("../database/conexion.php");
   session_start();
   if(!isset($_SESSION['id_user'])){
-    header("Location: index.php");
+    header("Location: ../index.php");
   }
 
   $id_user = $_SESSION['id_user'];
   $sql = "SELECT name_user,id FROM usuario WHERE id = '$id_user'";
   $resultado = $conexion->query($sql);
   $row = $resultado->fetch_assoc();
-  $sql_product =mysqli_query($conexion,"SELECT * FROM product");
-  /*
-  $sql_consulta ="SELECT COUNT(*) total FROM jobs";
-  $sql_jobs = $conexion->query($sql_consulta);
-  $jobs = $sql_jobs->fetch_assoc();*/
 
-  $sql_vehicle ="SELECT COUNT(*) total FROM vehicle";
-  $result_vehicle = $conexion->query($sql_vehicle);
-  $vechicle = $result_vehicle->fetch_assoc();
-
-  $sql_entry ="SELECT COUNT(*) total FROM vehicle_entry where (year(fecha_salida) = '0000') OR (costo_trabajo>(descuento_trabajo+adelantos) OR 
-  costo_inventario>(descuento_inventario+adelantos_inventario))";
-
-  $result_vehicle_entry = $conexion->query($sql_entry);
-  $vechicle_entry = $result_vehicle_entry->fetch_assoc();
-
-  $sql_entry_deuda ="SELECT COUNT(*) total FROM vehicle_entry WHERE costo_trabajo>(descuento_trabajo+adelantos) OR 
-    costo_inventario>(descuento_inventario+adelantos_inventario)";
-  $result_vehicle_entry_deuda = $conexion->query($sql_entry_deuda);
-  $vechicle_entry_deuda = $result_vehicle_entry_deuda->fetch_assoc();
-
-
-
+  $sql_client = mysqli_query($conexion,"SELECT E.id as IdE,P.nombre as PNombre,E.fecha as FR ,(E.precio - E.adelanto) AS deuda
+                    FROM entrada E inner join provider P on E.id_provider=P.id");
+  
+  if(isset($_POST['register'])){
+    $id_prov = mysqli_real_escape_string($conexion,$_POST['prov']);
+  
+    $verificar = "SELECT * FROM entrada";
+    $resultado_consulta= $conexion->query($verificar);
+    $rows1 = $resultado_consulta->num_rows; 
+   
+    $add_entry = "CALL add_entrada($id_prov)";
+    $ejecutar = $conexion->query($add_entry);
+        
+    $resultado_consulta= $conexion->query($verificar);
+    $rows = $resultado_consulta->num_rows; 
+      
+    header('Location: index.php');
+    
+  }
+ 
+  
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventario - Administracion</title>
+    <title>Entrada</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS-->
-    <link href="design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../design/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom fonts for this template-->
-    <link href="design/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="../design/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <!-- Page level plugin CSS-->
-    <link href="design/css/sb-admin.css" rel="stylesheet">
-    <link href="design/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../design/css/sb-admin.css" rel="stylesheet">
+    <link href="../design/datatables/dataTables.bootstrap4.css" rel="stylesheet">
     
-    
+    <script>
+      function addProduct(id){
+        
+      }
+    </script>
 </head>
 <body  class="fixed-nav sticky-footer bg-dark" id="page-top">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">    
-        <a class="navbar-brand" href="inventory.php">Tamecon</a>
+        <a class="navbar-brand" href="../inventory.php">Tamecon</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-              <a class="nav-link" href="inventory.php">
+              <a class="nav-link" href="../inventory.php">
                   <i class="fa fa-fw fa-home"></i>
                   <span class="nav-link-text">Inicio</span>
               </a>
@@ -83,9 +87,11 @@
                   <span class="nav-link-text">Inventario</span>
               </a>
             <ul class="sidenav-second-level collapse" id="collapseComponents">
-                
                 <li>
-                <a href="entries">Entradas</a>
+                <a href="navbar.html">Productos</a>
+                </li>
+                <li>
+                <a href="cards.html">Entradas</a>
                 </li>
                 <li>
                 <a href="cards.html">Detalle de Entradas</a>
@@ -100,16 +106,16 @@
             </a>
             <ul class="sidenav-second-level collapse" id="collapseExamplePages">
                 <li>
-                <a href="layout_assistant.php">Ayudantes</a>
+                <a href="../layout_assistant.php">Ayudantes</a>
                 </li>
                 <li>
-                <a href="layout_clients.php">Clientes</a>
+                <a href="../layout_clients.php">Clientes</a>
                 </li>
                 <li>
-                <a href="vehiculo/layout_vehiculo.php">Vehiculos</a>
+                <a href="layout_vehiculo.php">Vehiculos</a>
                 </li>
                 <li>
-                <a href="provider/layout_provider.php">Proveedores</a>
+                <a href="blank.html">Proveedores</a>
                 </li>
             </ul>
             </li>
@@ -149,144 +155,74 @@
         </ul>
         </div>
     </nav>
-
   <div class="content-wrapper">
       <div class="container-fluid">
         <!-- Breadcrumbs-->
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="inventory.php">Inicio</a>
+            <a href="../inventory.php">Inicio</a>
           </li>
-          <li class="breadcrumb-item active">Productos</li>
+          <li class="breadcrumb-item active">Entradas</li>
         </ol>
    <!-- Icon Cards-->
-        <div class="row">
-          <div class="col-xl-3 col-sm-6 mb-3">
-            <div class="card text-white bg-primary o-hidden h-100">
-              <div class="card-body">
-                <div class="card-body-icon">
-                  <i class="fa fa-fw fa-database"></i>
-                </div>
-                <div class="mr-5">
-                Historial Vehiculos
-                </div>
-                </div>
-                  <a class="card-footer text-white clearfix small z-1" href="records/record_vehicle.php">
-                    <span class="float-left">Ver Detalles</span>
-                    <span class="float-right">
-                      <i class="fa fa-angle-right"></i>
-                    </span>
-                  </a>
-                </div>
-            </div>
-        
-       
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card text-white bg-warning o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-fw fa-list"></i>
-              </div>
-              <div class="mr-5">Historial Asistentes </div>
-            </div>
-            <a class="card-footer text-white clearfix small z-1" href="records/record_assistant.php">
-              <span class="float-left">Ver Detalles</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-        
-      <div class="col-xl-3 col-sm-6 mb-3">
-        <div class="card text-white bg-danger o-hidden h-100">
-          <div class="card-body">
-          <div class="card-body-icon">
-            <i class="fa fa-fw fa-car"></i>
-          </div>
-          <div class="mr-5"><?php echo $vechicle['total'].'';?> Vehiculos</div>
-        </div>
-        <a class="card-footer text-white clearfix small z-1" href="vehiculo/layout_vehiculo.php">
-          <span class="float-left">Ver Detalles</span>
-          <span class="float-right">
-              <i class="fa fa-angle-right"></i>
-         </span>
-        </a>
-      </div>
-    </div>
-    <div class="col-xl-3 col-sm-6 mb-3">
-      <div class="card text-white bg-success o-hidden h-100">
-        <div class="card-body">
-          <div class="card-body-icon">
-            <i class="fa fa-fw fa-wrench"></i>
-          </div>
-          <div class="mr-5"><?php echo $vechicle_entry['total'].'';?> En Taller</div>
-        </div>
-          <a class="card-footer text-white clearfix small z-1" href="workshop/layout_workshop.php">
-            <span class="float-left">Ver Detalles</span>
-            <span class="float-right">
-              <i class="fa fa-angle-right"></i>
-            </span>
-          </a>
-        </div>
-      </div>
-    </div>
+      
+    
     <div class="col-xl-3 col-sm-6 mb-3 float-rigth">
-      <a data-toggle="tooltip" data-placement="right" title="Nuevo Producto"
-        href="new_product.php" class="btn btn-outline-primary ">Nuevo Producto
+      <a data-toggle="modal" data-target="#add_provider" class="btn btn-outline-primary ">
+        Nuevo Registro
       </a>
     </div>
       <!-- Example DataTables Card-->
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-table"></i> Tabla Productos</div>
+          <i class="fa fa-table"></i> Tabla Entradas</div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-              <thead>
+            <table class="table table-bordered " id="dataTable" width="100%" cellspacing="0">
+              <thead class="thead-dark">
                 <tr>
-                  <th>Codigo</th>
-                  <th>Producto</th>
-                  <th>Precio Entrada</th>
-                  <th>Precio Salida</th>
-                  <th>Unidad</th>
-                  <th>En Inventario</th>
+                  <th>Nro </th>
+                  <th>Proveedor</th>
+                  <th>Fecha</th>
+                  <th>Deuda</th>
                   <th>Accion</th>
                   
                 </tr>
               </thead>
               <tfoot>
                 <tr>
-                    <th>Codigo</th>
-                    <th>Producto</th>
-                    <th>Precio Entrada</th>
-                    <th>Precio Salida</th>
-                    <th>Unidad</th>
-                    <th>En Inventario</th>
-                    <th>Accion</th>
+                    <th>Nro </th>
+                  <th>Proveedor</th>
+                  <th>Fecha</th>
+                  <th>Deuda</th>
+                  <th><?php echo "Accion";?></th>
+                  
                   
                 </tr>
               </tfoot>
               <tbody>
                 <?php
-                  while($producto= mysqli_fetch_array($sql_product)){
+                  while($entry= mysqli_fetch_array($sql_client)){
                   
                     echo "<tr>";
-                      echo "<td>".$producto['code_product']."</td>";
-                      echo "<td>".$producto['name_product']."</td>";
-                      echo "<td>".$producto['precio_entrada']."</td>";
-                      echo "<td>".$producto['precio_salida']."</td>";
-                      echo "<td>".$producto['unidad']."</td>";
-                      echo "<td>".$producto['cantidad']."</td>";
-                      echo "<td>
-                        <a class='btn btn-xs  btn-warning' href='edit_product.php?id=$producto[id]'>
-                          <i class='fa fa-fw fa-pencil'></i>
-                        </a>
+                    echo "<td>".$entry['IdE']."</td>";
+                    echo "<td>".$entry['PNombre']."</td>";
+                    echo "<td>".$entry['FR']."</td>";
+                    echo "<td>".$entry['deuda']."</td>";
+                    
+                    echo "<td>
+                      
+                      <a class='btn btn-xs text-danger  btn-warning' href='agregar_product.php?id=$entry[IdE]'  onClick='addProduct(".$entry['IdE'].")'>
+                        <i class='fa fa-plus-square-o'></i>
+                      </a>
+                      <a class='btn btn-xs text-light  btn-success' href='add_entry.php?id=$entry[IdE]' onClick='addProduct(".$entry['IdE'].")'>
+                        <i class='fa fa-money'></i>
+                      </a>
                       </td>";
                     echo "</tr>";
-                  }
-                
-                ?>  
+                  }           
+                ?> 
+
               
               </tbody>
             </table>
@@ -329,25 +265,61 @@
           <div class="modal-body">Seleccione "Cerrar sesión" para confirmar</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-            <a class="btn btn-primary" href="logout.php">Cerrar sesión</a>
+            <a class="btn btn-primary" href="../logout.php">Cerrar sesión</a>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="add_provider" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Nuevo Registro de entrada</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form class="form-horizontal" method="POST" enctype="multipart/form-data" id="addproduct" 
+                action="<?php $_SERVER['PHP_SELF']; ?>" role="form">
+                
+                <div class="modal-body">
+                  <div class="form-group">
+                      <label for="inputEmail1" class="col-lg-2 control-label">Proveedor</label>
+                      <div class="col-md-6">
+                          <input type="number" name="prov"  required id="id_provider" class="form-control" 
+                          placeholder="id de proveedor">
+                      </div>
+                  </div>
+                
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" name="register" class="btn btn-primary">Añadir</button>
+                </div>
+        
+          </form>
+          
+          
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="design/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../design/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
     <!-- Page level plugin JavaScript-->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-    <script src="design/datatables/jquery.dataTables.js"></script>
-    <script src="design/datatables/dataTables.bootstrap4.js"></script>
+    <script src="../vendor/chart.js/Chart.min.js"></script>
+    <script src="../design/datatables/jquery.dataTables.js"></script>
+    <script src="../design/datatables/dataTables.bootstrap4.js"></script>
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin.min.js"></script>
+    <script src="../js/sb-admin.min.js"></script>
     <!-- Custom scripts for this page-->
-    <script src="js/sb-admin-datatables.min.js"></script>
-    <script src="js/sb-admin-charts.min.js"></script>
+    <script src="../js/sb-admin-datatables.min.js"></script>
+    <script src="../js/sb-admin-charts.min.js"></script>
   </div>
 </body>
 </html>

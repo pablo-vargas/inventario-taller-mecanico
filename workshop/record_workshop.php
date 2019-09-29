@@ -429,9 +429,9 @@
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                <th>Codigo</th>
-                                <th>Producto</th>
-                                <th>Accion</th>
+                                    <th>Codigo</th>
+                                    <th>Producto</th>
+                                    <th>Accion</th>
                                 
                                 </tr>
                             </thead>
