@@ -28,6 +28,7 @@ CREATE TABLE assign_job(
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
 );
 
+/*ultima modificacion*/
 
 delimiter $
 create procedure asignar_trabajo(det varchar(100) , vehiculo int ,precio float)
@@ -38,7 +39,8 @@ begin
 	Insert Into assign_job(id_v,detail,price_job) 
     Values(vehiculo,det,precio);
     
-    UPDATE vehicle_entry SET costo_trabajo=(@cost+precio) WHERE id=vehiculo;
+	set @price = (select sum(price_job) from assign_job where id_v=vehiculo);
+    update vehicle_entry set costo_trabajo=@price where id=vehiculo;
     
 end $
 
@@ -153,3 +155,45 @@ begin
     set @total = (Select sum(precio*cantidad) from entrada_prod where id_entrada=@entry);
     Update entrada SET precio = @total where id= @entry;
 end $
+
+/*MODIFICAR MATERIALES DE REGISTRO DE VEHICULOS*/
+delimiter $
+create procedure remove_product_vehicle(_id int)
+begin
+	set @idv = (Select id_v from inventory_consumption where id=_id);
+    DELETE FROM inventory_consumption where id=_id;
+    set @price = (select sum(precio_entrega*cantidad_entrega) from inventory_consumption where id_v=@idv);
+    update vehicle_entry set costo_inventario=@price where id=@idv;
+end $ 
+
+call remove_product_vehicle(5);
+
+delimiter $
+create procedure update_product_vehicle(_id int,_precio float, _cantidad float, _nombre varchar(100))
+begin
+	update inventory_consumption set precio_entrega=_precio,cantidad_entrega=_cantidad,n_product=_nombre
+    where id=_id;
+    set @idv = (Select id_v from inventory_consumption where id=_id);
+	set @price = (select sum(precio_entrega*cantidad_entrega) from inventory_consumption where id_v=@idv);
+    update vehicle_entry set costo_inventario=@price where id=@idv;
+end $
+
+delimiter $
+create procedure remove_job_vehicle(_id int)
+begin
+	set @idv = (Select id_v from assign_job where id=_id);
+    DELETE FROM assign_job where id=_id;
+    set @price = (select sum(price_job) from assign_job where id_v=@idv);
+    update vehicle_entry set costo_trabajo=@price where id=@idv;
+end $ 
+
+delimiter $
+create procedure update_job_vehicle(_id int,_precio float,_detalle varchar(100))
+ begin
+	Update assign_job set detail=_detalle, price_job=_precio where id = _id;
+    
+    set @idv = (Select id_v from assign_job where id=_id);
+    set @price = (select sum(price_job) from assign_job where id_v=@idv);
+    update vehicle_entry set costo_trabajo=@price where id=@idv;
+    
+ end $

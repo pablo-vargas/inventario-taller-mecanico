@@ -103,16 +103,35 @@
             }
         }
 
-        function entrega_productos(id,permiso,precio,prod){
+        function entrega_productos(id,permiso,precio,prod,nombre){
             if(permiso){
                 var price = parseFloat(prompt('Verificar precio de producto',precio));
                 var cantidad = parseFloat(prompt('Cantidad entrega de productos',1));
-                
-                location.href ="consumo_inv.php?id="+id+"&amount="+cantidad+"&prod="+prod+"&price="+price;
+                var name = prompt('Nombre para registro',nombre);
+                location.href ="consumo_inv.php?id="+id+"&amount="+cantidad+"&prod="+prod+"&price="+price+"&name="+name;
             }else{
                 alert("Ud. No esta Autorizado");
             }
         }
+
+        function remove_product(id,idv){
+            location.href="remove_product.php?id="+id+"&idv="+idv;
+        }
+        function update_product(idv,id,precio,cantidad,nombre){
+            var price = parseFloat(prompt('Verificar precio de producto',precio));
+            var cantidad = parseFloat(prompt('Cantidad entrega de productos',cantidad));
+            var name = prompt('Nombre para registro',nombre);
+            location.href ="update_product.php?idv="+idv+"&amount="+cantidad+"&id="+id+"&price="+price+"&name="+name;
+        }
+        function remove_trabajo(id,idv){
+            location.href="remove_job.php?id="+id+"&idv="+idv;
+        }
+        function update_job(idv,id,precio,detalle){
+            var price = parseFloat(prompt('Verificar precio de producto',precio));
+            var name = prompt('Nombre para registro',detalle);
+            location.href ="update_job.php?idv="+idv+"&id="+id+"&price="+price+"&name="+name;
+        }
+
         function asignar_trabajo(id,permiso,p1,p2,p3,tipo,trabajo){
             if(permiso){
                 var price=0;
@@ -274,7 +293,12 @@
                     Tipo de trabajo realizado : <?php echo $tipo_trabajo;?> <br><br>
                     Adelantos - Descuentos <br>
                     TRABAJO REALIZADO <br>
-                    Costo de trabajo realizado : <?php echo $row_product['CT'];?> <br>
+                    Costo de trabajo realizado : <?php echo $row_product['CT'];?> 
+                    <button class="badge badge-success" 
+                        data-toggle="modal" data-target="#editar_trabajo">
+                            Editar trabajos
+                    </button>
+                        <br>
                     Adelantos de trabajo realizado : <?php echo $row_product['AJ'];?>
                         <button class="badge badge-primary" 
                             onClick="<?php echo "advance_payments_job($id_vehicle,'$PERMTALLER')";?>">
@@ -291,7 +315,11 @@
                         </button> <br>
                     Deuda de Trabajo : <?php echo $row_product['DDT'];?><br><br>
                     MATERIALES <br>
-                    Costo consumo de inventario : <?php echo $row_product['CI'];?> <br>
+                    Costo consumo de inventario : <?php echo $row_product['CI'];?>
+                    <button class="badge badge-success" 
+                        data-toggle="modal" data-target="#editar_material">
+                            Editar  
+                    </button> <br>
                     Adelantos consumo de inventario : <?php echo $row_product['AI'];?>
                         <button  class="badge badge-primary"
                             onClick="<?php echo "advance_payments_inv($id_vehicle,'$PERMINV')";?>">
@@ -315,10 +343,6 @@
                 </div>
             </div>
 
-
-            
-
-            
         
         </div>
     
@@ -458,7 +482,7 @@
                                         //$id_vehicle,"."'$PERMINV',".$producto['precio_salida'].",".$producto['id'])."'
                                         echo "<td>
                                             <button class='btn btn-xs  btn-primary'
-                                             onclick='entrega_productos(".$id_vehicle.",".$PI.",".$producto['precio_salida'].",".$producto['id'].")'>
+                                             onclick='entrega_productos(".$id_vehicle.",".$PI.",".$producto['precio_salida'].",".$producto['id'].',"'.$producto['name_product'].'"'.")'>
                                             <i class='fa fa-plus-circle'></i>
                                             </button>
                                         </td>";
@@ -548,8 +572,148 @@
                 </div>
             </div>
         </div>
+        <!-- Editar Material -->
+        <div class="modal fade bd-example-modal-lg" id="editar_material" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modificar materiales</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            
+                            <th>Accion</th>
+                        
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto</th>  
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Accion</th>
+                        
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <?php
+                        $sql_product =mysqli_query($conexion,"SELECT * FROM inventory_consumption where id_v=$id_vehicle");
+                        $PI=0;
+                        if($PERMINV =='SI'){
+                            $PI=1;
+                        }
+                        while($producto= mysqli_fetch_array($sql_product)){
+                        
+                            echo "<tr>";
+                                echo "<td>".$producto['fecha_entrega']."</td>";
+                                echo "<td>".$producto['n_product']."</td>";
+                                echo "<td>".$producto['precio_entrega']."</td>";
+                                echo "<td>".$producto['cantidad_entrega']."</td>";
+                                
+                                //$id_vehicle,"."'$PERMINV',".$producto['precio_salida'].",".$producto['id'])."'
+                                echo "<td>
+                                    <button class='btn btn-xs  btn-primary'
+                                     onclick='update_product(".$id_vehicle.",".$producto['id'].",".$producto['precio_entrega'].",".$producto['cantidad_entrega'].',"'.$producto['n_product'].'"'.")'>
+                                    <i class='fa fa-pencil'></i>
+                                    </button> 
+                                    <button class='btn btn-xs  btn-danger'
+                                     onclick='remove_product(".$producto['id'].",".$id_vehicle.")'>
+                                    <i class='fa fa-trash'></i>
+                                    </button>
+                                </td>";
+                            echo "</tr>";
+                        }
+                        
+                        ?>  
                     
+                    </tbody>
+                    </table>
+                </div>
+              </div>
+              <div class="modal-footer">
+              
+              </div>
+            </div>
+          </div>
+        </div>      
 
+        <div class="modal fade bd-example-modal-lg" id="editar_trabajo" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modificar Trabajos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Detalle</th>
+                            <th>Precio</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Detalle</th>
+                            <th>Precio</th>
+                            <th>Accion</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <?php
+                        $sql_product =mysqli_query($conexion,"SELECT * FROM assign_job where id_v=$id_vehicle");
+                        $PI=0;
+                        if($PERMINV =='SI'){
+                            $PI=1;
+                        }
+                        while($producto= mysqli_fetch_array($sql_product)){
+                        
+                            echo "<tr>";
+                                
+                                echo "<td>".$producto['detail']."</td>";
+                                echo "<td>".$producto['price_job']."</td>";
+                                
+                                //$id_vehicle,"."'$PERMINV',".$producto['precio_salida'].",".$producto['id'])."'
+                                echo "<td>
+                                    <button class='btn btn-xs  btn-primary'
+                                    onclick='update_job(".$id_vehicle.",".$producto['id'].",".$producto['price_job'].',"'.$producto['detail'].'"'.")'>
+                                    <i class='fa fa-pencil'></i>
+                                    </button> 
+                                    <button class='btn btn-xs  btn-danger'
+                                     onclick='remove_trabajo(".$producto['id'].",".$id_vehicle.")'>
+                                    <i class='fa fa-trash'></i>
+                                    </button>
+                                </td>";
+                            echo "</tr>";
+                        }
+                        
+                        ?>  
+                    
+                    </tbody>
+                    </table>
+                </div>
+              </div>
+              <div class="modal-footer">
+              
+              </div>
+            </div>
+          </div>
+        </div>     
         <!-- Bootstrap core JavaScript-->
         <script src="../vendor/jquery/jquery.min.js"></script>
         <script src="../design/bootstrap/js/bootstrap.bundle.min.js"></script>

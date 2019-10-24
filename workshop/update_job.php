@@ -4,11 +4,11 @@
   if(!isset($_SESSION['id_user'])){
     header("Location: ../index.php");
   }
-  $id_vehicle = $_GET['id'];
-  $cant = $_GET['amount'];
+  $id_vehicle = $_GET['idv'];
+  
   $price = $_GET['price'];
-  $prod = $_GET['prod'];
+  $id = $_GET['id'];
   $name = $_GET['name'];
-  $add_advance = "CALL consumo_inv($prod,$id_vehicle,$price,$cant,'$name')";
-  $ejecutar = $conexion->query($add_advance);
+  $sql = "CALL update_job_vehicle($id,$price,'$name')";
+  $ejecutar = $conexion->query($sql);
   header("Location: record_workshop.php?id=$id_vehicle");

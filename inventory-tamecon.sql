@@ -101,6 +101,7 @@ CREATE TABLE inventory_consumption(
     fecha_entrega datetime,
     precio_entrega float,
     cantidad_entrega float,
+    n_product varchar(100),
 	FOREIGN KEY (id_p) REFERENCES product(id),
     FOREIGN KEY (id_v) REFERENCES vehicle_entry(id)
 ); 
@@ -119,6 +120,19 @@ begin
     UPDATE vehicle_entry SET costo_inventario=(@ADELANTOS+(precio*cant))WHERE id=vehiculo;
     UPDATE product SET cantidad=@Cant-cant WHERE id=prod;
 end $
+
+delimiter $
+CREATE PROCEDURE `consumo_inv` (`prod` INT, `vehiculo` INT, `precio` FLOAT, `cant` FLOAT, `name` VARCHAR(100))  begin
+	Set @ADELANTOS=(Select costo_inventario from vehicle_entry Where id=vehiculo);
+    set @Cant=(Select cantidad from product Where id =prod);
+    
+	Insert Into inventory_consumption(id_p,id_v,fecha_entrega,precio_entrega,cantidad_entrega,n_product) 
+    Values(prod,vehiculo,NOW(),precio,cant,name);
+    
+    UPDATE vehicle_entry SET costo_inventario=(@ADELANTOS+(precio*cant))WHERE id=vehiculo;
+    UPDATE product SET cantidad=@Cant-cant WHERE id=prod;
+end$
+
 
 select * from jobs;
 select * from vehicle_entry;

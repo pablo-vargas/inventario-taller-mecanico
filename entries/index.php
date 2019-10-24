@@ -168,8 +168,8 @@
       
     
     <div class="col-xl-3 col-sm-6 mb-3 float-rigth">
-      <a data-toggle="modal" data-target="#add_provider" class="btn btn-outline-primary ">
-        Nuevo Registro
+      <a data-toggle="modal" data-target="#add_payments" class="btn btn-outline-primary ">
+        Adelantos
       </a>
     </div>
       <!-- Example DataTables Card-->
@@ -215,7 +215,7 @@
                       <a class='btn btn-xs text-danger  btn-warning' href='agregar_product.php?id=$entry[IdE]'  onClick='addProduct(".$entry['IdE'].")'>
                         <i class='fa fa-plus-square-o'></i>
                       </a>
-                      <a class='btn btn-xs text-light  btn-success' href='add_entry.php?id=$entry[IdE]' onClick='addProduct(".$entry['IdE'].")'>
+                      <a class='btn btn-xs text-light  btn-success' href='payments.php?id=$entry[IdE]' onClick='addProduct(".$entry['IdE'].")'>
                         <i class='fa fa-money'></i>
                       </a>
                       </td>";
@@ -271,7 +271,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="add_provider" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="add_payments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
